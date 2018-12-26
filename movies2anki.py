@@ -11,7 +11,7 @@ import sys
 import time
 
 from collections import deque
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 from PyQt5 import QtCore, QtGui, QtWidgets
 from subprocess import call
 from subprocess import check_output
@@ -405,11 +405,11 @@ def create_collection_dir(directory):
 def create_or_clean_collection_dir(directory):
     try:
         if os.path.exists(directory):
-            print("Remove dir " + directory.encode('utf-8'))
+            print("Remove dir " + directory)
             shutil.rmtree(directory)
             time.sleep(0.5)
     
-        print("Create dir " + directory.encode('utf-8'))
+        print("Create dir " + directory)
         os.makedirs(directory)
     except OSError as ex:
         print(ex)
@@ -475,57 +475,66 @@ class Model(object):
         if not os.path.isfile(self.config_file_name):
             return
 
-        config = SafeConfigParser()
+        config = ConfigParser()
         config.read(self.config_file_name)
 
-        self.input_directory = config.get('main', 'input_directory').decode('utf-8')
-        self.output_directory = config.get('main', 'output_directory').decode('utf-8')
-        self.video_width = config.getint('main', 'video_width')
-        self.video_height = config.getint('main', 'video_height')
-        self.shift_start = config.getfloat('main', 'pad_start')
-        self.shift_end = config.getfloat('main', 'pad_end')
-        self.time_delta = config.getfloat('main', 'gap_between_phrases')
-        self.is_split_long_phrases = config.getboolean('main', 'is_split_long_phrases')
-        self.phrases_duration_limit = config.getint('main', 'phrases_duration_limit')
-        self.mode = config.get('main', 'mode')
-        self.is_write_output_subtitles = config.getboolean('main', 'is_write_output_subtitles')
-        self.is_write_output_subtitles_for_clips = config.getboolean('main', 'is_write_output_subtitles_for_clips')
-        self.is_create_clips_with_softsub = config.getboolean('main', 'is_create_clips_with_softsub')
-        self.is_create_clips_with_hardsub = config.getboolean('main', 'is_create_clips_with_hardsub')
-        self.hardsub_style = config.get('main', 'hardsub_style')
-        self.is_ignore_sdh_subtitle = config.getboolean('main', 'is_ignore_sdh_subtitle')
-        self.is_add_dir_to_media_path = config.getboolean('main', 'is_add_dir_to_media_path')
-        self.is_separate_fragments_without_subtitles = config.getboolean('main', 'is_separate_fragments_without_subtitles')
-        
-        value = [e.strip() for e in config.get('main', 'recent_deck_names').decode('utf-8').split(',')]
+        mcfg = config['main']
+        #utf-8 python3
+        #self.input_directory = mcfg['input_directory'].decode('utf-8')
+        self.input_directory = mcfg['input_directory']
+        self.output_directory = mcfg['output_directory']
+        self.video_width = int(mcfg['video_width'])
+        self.video_height = int(mcfg['video_height'])
+        self.shift_start = float(mcfg['pad_start'])
+        self.shift_end =  float(mcfg['pad_end'])
+        self.time_delta = float(mcfg['gap_between_phrases'])
+        self.is_split_long_phrases = mcfg.getboolean('is_split_long_phrases')
+        self.phrases_duration_limit = int(mcfg['phrases_duration_limit'])
+        self.mode =  mcfg['mode']
+        self.is_write_output_subtitles = mcfg.getboolean('is_write_output_subtitles')
+        self.is_write_output_subtitles_for_clips = mcfg.getboolean('is_write_output_subtitles_for_clips')
+        self.is_create_clips_with_softsub = mcfg.getboolean('is_create_clips_with_softsub')
+        self.is_create_clips_with_hardsub = mcfg.getboolean('is_create_clips_with_hardsub')
+        self.hardsub_style = mcfg['hardsub_style']
+        self.is_ignore_sdh_subtitle = mcfg.getboolean('is_ignore_sdh_subtitle')
+        self.is_add_dir_to_media_path = mcfg.getboolean('is_add_dir_to_media_path')
+        self.is_separate_fragments_without_subtitles = mcfg.getboolean('is_separate_fragments_without_subtitles')
+
+        #value = [e.strip() for e in config.get('main', 'recent_deck_names').decode('utf-8').split(',')]
+        #value = [e.strip() for e in mcfg['recent_deck_names'].decode('utf-8').split(',')]
+        value = [e.strip() for e in mcfg['recent_deck_names'].split(',')]
         if len(value) != 0:
             self.recent_deck_names.extendleft(value)
 
     def save_settings(self):
-        config = SafeConfigParser()
-        config.add_section('main')
+        # need use new api for confiparser
+        config = ConfigParser(allow_no_value=True)
         print("save setting")
-        config.set('main', 'input_directory', self.input_directory.encode('utf-8'))
-        config.set('main', 'output_directory', self.output_directory.encode('utf-8'))
-        config.set('main', 'video_width', str(self.video_width))
-        config.set('main', 'video_height', str(self.video_height))
-        config.set('main', 'pad_start', str(self.shift_start))
-        config.set('main', 'pad_end', str(self.shift_end))
-        config.set('main', 'gap_between_phrases', str(self.time_delta))
-        config.set('main', 'is_split_long_phrases', str(self.is_split_long_phrases))
-        config.set('main', 'phrases_duration_limit', str(self.phrases_duration_limit))
-        config.set('main', 'mode', self.mode)
-        config.set('main', 'is_write_output_subtitles', str(self.is_write_output_subtitles))
-        config.set('main', 'is_write_output_subtitles_for_clips', str(self.is_write_output_subtitles_for_clips))
-        config.set('main', 'is_create_clips_with_softsub', str(self.is_create_clips_with_softsub))
-        config.set('main', 'is_create_clips_with_hardsub', str(self.is_create_clips_with_hardsub))
-        config.set('main', 'hardsub_style', self.hardsub_style.encode('utf-8'))
-        config.set('main', 'is_ignore_sdh_subtitle', str(self.is_ignore_sdh_subtitle))
-        config.set('main', 'is_add_dir_to_media_path', str(self.is_add_dir_to_media_path))
-        config.set('main', 'is_separate_fragments_without_subtitles', str(self.is_separate_fragments_without_subtitles))
-        
-        config.set('main', 'recent_deck_names', ",".join(reversed(self.recent_deck_names)).encode('utf-8'))
+        print("type input_diretory",type(self.input_directory))
+        print("input_diretory", self.input_directory)
+     #   config.add_section('main')
+     #   #config.set('main', 'input_directory', self.input_directory.encode('utf-8'), allow_no_value=True)
   
+        config['main'] = { 'input_directory': self.input_directory.encode('utf-8'),
+                           'output_directory': self.output_directory.encode('utf-8'),
+                           'video_width': str(self.video_width),
+                           'video_height': str(self.video_height),
+                           'pad_start': str(self.shift_start),
+                           'pad_end': str(self.shift_end),
+                           'gap_between_phrases': str(self.time_delta),
+                           'is_split_long_phrases': str(self.is_split_long_phrases),
+                           'phrases_duration_limit': str(self.phrases_duration_limit),
+                           'mode': self.mode,
+                           'is_write_output_subtitles': str(self.is_write_output_subtitles),
+                           'is_write_output_subtitles_for_clips': str(self.is_write_output_subtitles_for_clips),
+                           'is_create_clips_with_softsub': str(self.is_create_clips_with_softsub),
+                           'is_create_clips_with_hardsub': str(self.is_create_clips_with_hardsub),
+                           'hardsub_style': self.hardsub_style.encode('utf-8'),
+                           'is_ignore_sdh_subtitle': str(self.is_ignore_sdh_subtitle),
+                           'is_add_dir_to_media_path': str(self.is_add_dir_to_media_path),
+                           'is_separate_fragments_without_subtitles': str(self.is_separate_fragments_without_subtitles),
+                           'recent_deck_names': ",".join(reversed(self.recent_deck_names)).encode('utf-8') }
+                           
         with open(self.config_file_name, 'w') as f:
             config.write(f)
 
@@ -545,8 +554,10 @@ class Model(object):
     def load_subtitle(self, filename, is_ignore_SDH):
         if len(filename) == 0:
             return []
-
-        file_content = open(filename, 'rU').read()
+        # open U mode no
+        #file_content = open(filename, 'rU').read()
+        #file_content = open(filename, 'r', newline = '\n').read()
+        file_content = open(filename, 'r').read()
         if file_content[:3]=='\xef\xbb\xbf': # with bom
             file_content = file_content[3:]
 
@@ -554,7 +565,8 @@ class Model(object):
         file_content = fix_empty_lines(file_content)
 
         ## Конвертируем субтитры в Unicode
-        file_content = self.convert_to_unicode(file_content)
+        print("in load sub to convert to unicoe")
+       # file_content = self.convert_to_unicode(file_content)
 
         ## Читаем субтитры
         return read_subtitles(file_content, is_ignore_SDH)
@@ -998,10 +1010,12 @@ class Example(QtWidgets.QMainWindow):
         self.videoEdit.setText(fname[0])
 
     def showSubsEngFileDialog(self):
+        print("subs file to  click") 
         fname = str(QtWidgets.QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)"))[0]
         self.subsEngEdit.setText(fname)
 
         self.directory = os.path.dirname(fname)
+        print("subs file diaglog selected") 
 
     def showSubsRusFileDialog(self):
         fname = str(QtWidgets.QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)"))[0]
@@ -1014,7 +1028,7 @@ class Example(QtWidgets.QMainWindow):
 
         if len(fname) != 0:
             self.model.output_directory = fname
-
+        print("out dir")
         self.outDirEdit.setText(self.model.output_directory)
 
     def showErrorDialog(self, message):
@@ -1360,6 +1374,7 @@ The longest phrase: %s min. %s sec.""" % (self.model.num_en_subs, self.model.num
 
         # create or remove & create colletion.media directory
         collection_dir = getNameForCollectionDirectory(self.model.output_directory, self.model.deck_name)
+        print("collection dir:", collection_dir,type(collection_dir))
         if os.path.exists(collection_dir) and self.showDirAlreadyExistsDialog(collection_dir) == False:
             return
 
