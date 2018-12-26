@@ -12,7 +12,7 @@ import time
 
 from collections import deque
 from configparser import SafeConfigParser
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 from subprocess import call
 from subprocess import check_output
 from subprocess import Popen
@@ -504,6 +504,7 @@ class Model(object):
     def save_settings(self):
         config = SafeConfigParser()
         config.add_section('main')
+        print("save setting")
         config.set('main', 'input_directory', self.input_directory.encode('utf-8'))
         config.set('main', 'output_directory', self.output_directory.encode('utf-8'))
         config.set('main', 'video_width', str(self.video_width))
@@ -877,7 +878,7 @@ class VideoWorker(QtCore.QThread):
         if self.model.batch_mode:
             self.batchJobsFinished.emit()
 
-class JobsInfo(QtGui.QDialog):
+class JobsInfo(QtWidgets.QDialog):
     
     def __init__(self, message, parent=None):
         super(JobsInfo, self).__init__(parent)
@@ -886,17 +887,17 @@ class JobsInfo(QtGui.QDialog):
 
     def initUI(self, message):
         
-        okButton = QtGui.QPushButton("OK")
-        cancelButton = QtGui.QPushButton("Cancel")
+        okButton = QtWidgets.QPushButton("OK")
+        cancelButton = QtWidgets.QPushButton("Cancel")
         
         okButton.clicked.connect(self.ok)
         cancelButton.clicked.connect(self.cancel)
 
-        reviewEdit = QtGui.QTextEdit()
+        reviewEdit = QtWidgets.QTextEdit()
         reviewEdit.setReadOnly(True)
         reviewEdit.setText(message)
 
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         grid.setSpacing(10)
 
         grid.addWidget(reviewEdit, 1, 1, 1, 3)
@@ -918,7 +919,7 @@ class JobsInfo(QtGui.QDialog):
     def cancel(self):
         self.done(0)
 
-class Example(QtGui.QMainWindow):
+class Example(QtWidgets.QMainWindow):
     
     def __init__(self):
         super(Example, self).__init__()
@@ -930,9 +931,9 @@ class Example(QtGui.QMainWindow):
         self.initUI()
         
     def initUI(self):
-        w = QtGui.QWidget()
+        w = QtWidgets.QWidget()
 
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
 
         # ---------------------------------------------------
         filesGroup = self.createFilesGroup()
@@ -980,29 +981,36 @@ class Example(QtGui.QMainWindow):
         self.show()
 
     def closeEvent(self, event):
+        print("close events")
         # save settings
         self.model.save_settings()
         
-        QtGui.QMainWindow.closeEvent(self, event)
+        QtWidgets.QMainWindow.closeEvent(self, event)
 
     def showVideoFileDialog(self):
-        fname = str(QtGui.QFileDialog.getOpenFileName(directory = self.directory, filter = "Video Files (*.avi *.mkv *.mp4 *.ts);;All files (*.*)"))
-        self.videoEdit.setText(fname)
+
+        
+        print("video file to  click") 
+        #fname = str(QtWidgets.QFileDialog.getOpenFileName(directory = self.directory, filter = "Video Files (*.avi *.mkv *.mp4 *.ts);;All files (*.*)"))[0]
+        #fname = str(QtWidgets.QFileDialog.getOpenFileName(directory = "QtWidgets.QFileDialog.getOpenFileName()", filter = "Video Files (*.avi *.mkv *.mp4 *.ts);;All files (*.*)"))[0]
+        fname = QtWidgets.QFileDialog.getOpenFileName(directory = "QtWidgets.QFileDialog.getOpenFileName()", filter = "Video Files (*.avi *.mkv *.mp4 *.ts);;All files (*.*)")
+        print("video file click",fname, "and to set videoEdit") 
+        self.videoEdit.setText(fname[0])
 
     def showSubsEngFileDialog(self):
-        fname = str(QtGui.QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)"))
+        fname = str(QtWidgets.QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)"))[0]
         self.subsEngEdit.setText(fname)
 
         self.directory = os.path.dirname(fname)
 
     def showSubsRusFileDialog(self):
-        fname = str(QtGui.QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)"))
+        fname = str(QtWidgets.QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)"))[0]
         self.subsRusEdit.setText(fname)
 
         self.directory = os.path.dirname(fname)
 
     def showOutDirectoryDialog(self):
-        fname = str(QtGui.QFileDialog.getExistingDirectory(directory = self.model.output_directory))
+        fname = str(QtWidgets.QFileDialog.getExistingDirectory(directory = self.model.output_directory))
 
         if len(fname) != 0:
             self.model.output_directory = fname
@@ -1010,14 +1018,14 @@ class Example(QtGui.QMainWindow):
         self.outDirEdit.setText(self.model.output_directory)
 
     def showErrorDialog(self, message):
-        QtGui.QMessageBox.critical(self, "movies2anki", message)
+        QtWidgets.QMessageBox.critical(self, "movies2anki", message)
 
     def showDirAlreadyExistsDialog(self, dir):
-        reply = QtGui.QMessageBox.question(self, "movies2anki",
-            "Folder '" + dir + "' already exists. Do you want to overwrite it?", QtGui.QMessageBox.Yes | 
-            QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+        reply = QtWidgets.QMessageBox.question(self, "movies2anki",
+            "Folder '" + dir + "' already exists. Do you want to overwrite it?", QtWidgets.QMessageBox.Yes | 
+            QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
 
-        if reply == QtGui.QMessageBox.Yes:
+        if reply == QtWidgets.QMessageBox.Yes:
             return True
             
         return False
@@ -1092,8 +1100,10 @@ class Example(QtGui.QMainWindow):
         self.subsRusEdit.setText(self.model.ru_srt)
 
     def changeVideoFile(self):
+        print("change video file once click and select path")
         self.model.video_file = str(self.videoEdit.text()).strip()
         self.directory = os.path.dirname(self.model.video_file)
+        print("change video file: ", self.directory)
         self.model.input_directory = self.directory
 
         self.changeAudioStreams()
@@ -1208,7 +1218,7 @@ class Example(QtGui.QMainWindow):
 Russian subtitles: %s
 Phrases: %s
 The longest phrase: %s min. %s sec.""" % (self.model.num_en_subs, self.model.num_ru_subs, self.model.num_phrases, minutes, seconds)
-        QtGui.QMessageBox.information(self, "Preview", message)
+        QtWidgets.QMessageBox.information(self, "Preview", message)
 
         self.changeEngSubs()
         self.changeRusSubs()
@@ -1381,7 +1391,7 @@ The longest phrase: %s min. %s sec.""" % (self.model.num_en_subs, self.model.num
         minutes = int(time_diff / 60)
         seconds = int(time_diff % 60)
         message = "Processing completed in %s minutes %s seconds." % (minutes, seconds)
-        QtGui.QMessageBox.information(self, "movies2anki", message)
+        QtWidgets.QMessageBox.information(self, "movies2anki", message)
 
     def updateDeckComboBox(self):
         text = str(self.deckComboBox.currentText()).strip()
@@ -1405,13 +1415,13 @@ The longest phrase: %s min. %s sec.""" % (self.model.num_en_subs, self.model.num
         self.showErrorDialog(message)
 
     def convert_video(self):
-        self.progressDialog = QtGui.QProgressDialog(self)
+        self.progressDialog = QtWidgets.QProgressDialog(self)
 
         self.progressDialog.setWindowTitle("Generate Video & Audio Clips")
         self.progressDialog.setCancelButtonText("Cancel")
         self.progressDialog.setMinimumDuration(0)
 
-        progress_bar = QtGui.QProgressBar(self.progressDialog)
+        progress_bar = QtWidgets.QProgressBar(self.progressDialog)
         progress_bar.setAlignment(QtCore.Qt.AlignCenter)
         self.progressDialog.setBar(progress_bar)
 
@@ -1430,34 +1440,34 @@ The longest phrase: %s min. %s sec.""" % (self.model.num_en_subs, self.model.num
         self.worker.start()
         
     def createFilesGroup(self):
-        groupBox = QtGui.QGroupBox("Files:")
+        groupBox = QtWidgets.QGroupBox("Files:")
 
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
 
-        self.videoButton = QtGui.QPushButton("Video...")
-        self.videoEdit = QtGui.QLineEdit()
-        self.audioIdComboBox = QtGui.QComboBox()
+        self.videoButton = QtWidgets.QPushButton("Video...")
+        self.videoEdit = QtWidgets.QLineEdit()
+        self.audioIdComboBox = QtWidgets.QComboBox()
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.videoButton)
         hbox.addWidget(self.videoEdit)
         hbox.addWidget(self.audioIdComboBox)
 
         vbox.addLayout(hbox)
 
-        self.subsEngButton = QtGui.QPushButton("Eng Subs...")
-        self.subsEngEdit = QtGui.QLineEdit()
+        self.subsEngButton = QtWidgets.QPushButton("Eng Subs...")
+        self.subsEngEdit = QtWidgets.QLineEdit()
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.subsEngButton)
         hbox.addWidget(self.subsEngEdit)
 
         vbox.addLayout(hbox)
 
-        self.subsRusButton = QtGui.QPushButton("Rus Subs...")
-        self.subsRusEdit = QtGui.QLineEdit()
+        self.subsRusButton = QtWidgets.QPushButton("Rus Subs...")
+        self.subsRusEdit = QtWidgets.QLineEdit()
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.subsRusButton)
         hbox.addWidget(self.subsRusEdit)
 
@@ -1468,15 +1478,15 @@ The longest phrase: %s min. %s sec.""" % (self.model.num_en_subs, self.model.num
         return groupBox
 
     def createOutputGroup(self):
-        groupBox = QtGui.QGroupBox("Output:")
+        groupBox = QtWidgets.QGroupBox("Output:")
 
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
 
-        self.outDirButton = QtGui.QPushButton("Directory...")
-        self.outDirEdit = QtGui.QLineEdit()
+        self.outDirButton = QtWidgets.QPushButton("Directory...")
+        self.outDirEdit = QtWidgets.QLineEdit()
         self.outDirEdit.setText(self.model.output_directory)
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.outDirButton)
         hbox.addWidget(self.outDirEdit)
 
@@ -1487,105 +1497,105 @@ The longest phrase: %s min. %s sec.""" % (self.model.num_en_subs, self.model.num
         return groupBox
 
     def createVideoDimensionsGroup(self):
-        groupBox = QtGui.QGroupBox("Video Dimensions:")
+        groupBox = QtWidgets.QGroupBox("Video Dimensions:")
 
-        layout = QtGui.QFormLayout()
+        layout = QtWidgets.QFormLayout()
 
-        self.widthSpinBox = QtGui.QSpinBox()
+        self.widthSpinBox = QtWidgets.QSpinBox()
         self.widthSpinBox.setRange(-2, 2048)
         self.widthSpinBox.setSingleStep(2)
         self.widthSpinBox.setValue(self.model.getVideoWidth())
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.widthSpinBox)
-        hbox.addWidget(QtGui.QLabel("px"))
+        hbox.addWidget(QtWidgets.QLabel("px"))
 
-        layout.addRow(QtGui.QLabel("Width:"), hbox)
+        layout.addRow(QtWidgets.QLabel("Width:"), hbox)
 
-        self.heightSpinBox = QtGui.QSpinBox()
+        self.heightSpinBox = QtWidgets.QSpinBox()
         self.heightSpinBox.setRange(-2, 2048)
         self.heightSpinBox.setSingleStep(2)
         self.heightSpinBox.setValue(self.model.getVideoHeight())
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.heightSpinBox)
-        hbox.addWidget(QtGui.QLabel("px"))
+        hbox.addWidget(QtWidgets.QLabel("px"))
 
-        layout.addRow(QtGui.QLabel("Height:"), hbox)
+        layout.addRow(QtWidgets.QLabel("Height:"), hbox)
 
         groupBox.setLayout(layout)
 
         return groupBox
 
     def createPadTimingsGroup(self):
-        groupBox = QtGui.QGroupBox("Pad Timings:")
+        groupBox = QtWidgets.QGroupBox("Pad Timings:")
 
-        layout = QtGui.QFormLayout()
+        layout = QtWidgets.QFormLayout()
 
-        self.startSpinBox = QtGui.QSpinBox()
+        self.startSpinBox = QtWidgets.QSpinBox()
         self.startSpinBox.setRange(-9999, 9999)
         self.startSpinBox.setValue(self.model.getShiftStart())
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.startSpinBox)
-        hbox.addWidget(QtGui.QLabel("ms"))
+        hbox.addWidget(QtWidgets.QLabel("ms"))
 
-        layout.addRow(QtGui.QLabel("Start:"), hbox)
+        layout.addRow(QtWidgets.QLabel("Start:"), hbox)
 
-        self.endSpinBox = QtGui.QSpinBox()
+        self.endSpinBox = QtWidgets.QSpinBox()
         self.endSpinBox.setRange(-9999, 9999)
         self.endSpinBox.setValue(self.model.getShiftEnd())
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.endSpinBox)
-        hbox.addWidget(QtGui.QLabel("ms"))
+        hbox.addWidget(QtWidgets.QLabel("ms"))
 
-        layout.addRow(QtGui.QLabel("End:"), hbox)
+        layout.addRow(QtWidgets.QLabel("End:"), hbox)
 
         groupBox.setLayout(layout)
 
         return groupBox
 
     def createGapPhrasesGroup(self):
-        groupBox = QtGui.QGroupBox("Gap between Phrases:")
+        groupBox = QtWidgets.QGroupBox("Gap between Phrases:")
 
-        self.timeSpinBox = QtGui.QDoubleSpinBox()
+        self.timeSpinBox = QtWidgets.QDoubleSpinBox()
         self.timeSpinBox.setRange(0, 600.0)
         self.timeSpinBox.setSingleStep(0.25)
         self.timeSpinBox.setValue(self.model.getTimeDelta())
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.timeSpinBox)
-        hbox.addWidget(QtGui.QLabel("sec"))
+        hbox.addWidget(QtWidgets.QLabel("sec"))
 
         groupBox.setLayout(hbox)
 
         return groupBox
 
     def createSplitPhrasesGroup(self):
-        self.splitLongPhrasesGroupBox = QtGui.QGroupBox("Split Long Phrases:")
+        self.splitLongPhrasesGroupBox = QtWidgets.QGroupBox("Split Long Phrases:")
         self.splitLongPhrasesGroupBox.setCheckable(True)
         self.splitLongPhrasesGroupBox.setChecked(self.model.is_split_long_phrases)
         self.splitLongPhrasesGroupBox.clicked.connect(self.setSplitLongPhrases)
 
-        self.splitPhrasesSpinBox = QtGui.QSpinBox()
+        self.splitPhrasesSpinBox = QtWidgets.QSpinBox()
         self.splitPhrasesSpinBox.setRange(1, 6000)
         self.splitPhrasesSpinBox.setSingleStep(10)
         self.splitPhrasesSpinBox.setValue(self.model.getPhrasesDurationLimit())
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.splitPhrasesSpinBox)
-        hbox.addWidget(QtGui.QLabel("sec"))
+        hbox.addWidget(QtWidgets.QLabel("sec"))
 
         self.splitLongPhrasesGroupBox.setLayout(hbox)
 
         return self.splitLongPhrasesGroupBox
 
     def createModeOptionsGroup(self):
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
 
-        self.movieRadioButton = QtGui.QRadioButton("Movie")
-        self.phrasesRadioButton = QtGui.QRadioButton("Phrases")
+        self.movieRadioButton = QtWidgets.QRadioButton("Movie")
+        self.phrasesRadioButton = QtWidgets.QRadioButton("Phrases")
 
         if self.model.getMode() == 'Phrases':
             self.phrasesRadioButton.setChecked(True)
@@ -1598,9 +1608,9 @@ The longest phrase: %s min. %s sec.""" % (self.model.num_en_subs, self.model.num
         return vbox
 
     def createSubtitlePhrasesGroup(self):
-        groupBox = QtGui.QGroupBox("General Settings:")
+        groupBox = QtWidgets.QGroupBox("General Settings:")
 
-        layout = QtGui.QHBoxLayout()
+        layout = QtWidgets.QHBoxLayout()
 
         layout.addWidget(self.createGapPhrasesGroup())
         layout.addWidget(self.createSplitPhrasesGroup())
@@ -1611,9 +1621,9 @@ The longest phrase: %s min. %s sec.""" % (self.model.num_en_subs, self.model.num
         return groupBox
 
     def createOptionsGroup(self):
-        groupBox = QtGui.QGroupBox("Options:")
+        groupBox = QtWidgets.QGroupBox("Options:")
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.createVideoDimensionsGroup())
         hbox.addWidget(self.createPadTimingsGroup())
         hbox.addWidget(self.createSubtitlePhrasesGroup())
@@ -1623,28 +1633,28 @@ The longest phrase: %s min. %s sec.""" % (self.model.num_en_subs, self.model.num
         return groupBox
 
     def createBottomGroup(self):
-        groupBox = QtGui.QGroupBox("Name for deck:")
+        groupBox = QtWidgets.QGroupBox("Name for deck:")
 
-        self.deckComboBox = QtGui.QComboBox()
+        self.deckComboBox = QtWidgets.QComboBox()
         self.deckComboBox.setEditable(True)
         self.deckComboBox.setMaxCount(5)
-        self.deckComboBox.setSizePolicy(QtGui.QSizePolicy.Expanding,
-                QtGui.QSizePolicy.Preferred)
+        self.deckComboBox.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                QtWidgets.QSizePolicy.Preferred)
         self.deckComboBox.addItems(self.model.recent_deck_names)
         self.deckComboBox.clearEditText()
-        self.deckComboBox.setInsertPolicy(QtGui.QComboBox.NoInsert)
+        self.deckComboBox.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
                 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.deckComboBox)
 
         groupBox.setLayout(hbox)
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(groupBox)
 
-        vbox = QtGui.QVBoxLayout()
-        self.previewButton = QtGui.QPushButton("Preview...")
-        self.startButton = QtGui.QPushButton("Go!")
+        vbox = QtWidgets.QVBoxLayout()
+        self.previewButton = QtWidgets.QPushButton("Preview...")
+        self.startButton = QtWidgets.QPushButton("Go!")
         vbox.addWidget(self.previewButton)
         vbox.addWidget(self.startButton)
 
@@ -1653,17 +1663,17 @@ The longest phrase: %s min. %s sec.""" % (self.model.num_en_subs, self.model.num
         return hbox
 
 def main():
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     ex = Example()
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
-    sys.stderr = open('log.txt', 'w')
-    sys.stdout = sys.stderr
+    #sys.stderr = open('log.txt', 'w')
+    # sys.stdout = sys.stderr
 
     os.environ["PATH"] += os.pathsep + "." + os.sep + "ffmpeg" + os.sep + "bin"
 
     main()
     
-    sys.stderr.close()
-    sys.stderr = sys.__stderr__
+    #sys.stderr.close()
+    #sys.stderr = sys.__stderr__
