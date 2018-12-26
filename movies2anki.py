@@ -515,8 +515,9 @@ class Model(object):
      #   config.add_section('main')
      #   #config.set('main', 'input_directory', self.input_directory.encode('utf-8'), allow_no_value=True)
   
-        config['main'] = { 'input_directory': self.input_directory.encode('utf-8'),
-                           'output_directory': self.output_directory.encode('utf-8'),
+        #config['main'] = { 'input_directory': self.input_directory.encode('utf-8'),str to byte string
+        config['main'] = { 'input_directory': self.input_directory,
+                           'output_directory': self.output_directory,
                            'video_width': str(self.video_width),
                            'video_height': str(self.video_height),
                            'pad_start': str(self.shift_start),
@@ -529,11 +530,11 @@ class Model(object):
                            'is_write_output_subtitles_for_clips': str(self.is_write_output_subtitles_for_clips),
                            'is_create_clips_with_softsub': str(self.is_create_clips_with_softsub),
                            'is_create_clips_with_hardsub': str(self.is_create_clips_with_hardsub),
-                           'hardsub_style': self.hardsub_style.encode('utf-8'),
+                           'hardsub_style': self.hardsub_style,
                            'is_ignore_sdh_subtitle': str(self.is_ignore_sdh_subtitle),
                            'is_add_dir_to_media_path': str(self.is_add_dir_to_media_path),
                            'is_separate_fragments_without_subtitles': str(self.is_separate_fragments_without_subtitles),
-                           'recent_deck_names': ",".join(reversed(self.recent_deck_names)).encode('utf-8') }
+                           'recent_deck_names': ",".join(reversed(self.recent_deck_names)) }
                            
         with open(self.config_file_name, 'w') as f:
             config.write(f)
