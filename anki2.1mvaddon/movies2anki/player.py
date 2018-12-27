@@ -7,6 +7,7 @@
 #
 
 import subprocess, sys, time, re, atexit
+from PyQt5.QtWidgets import *
 import anki.sound as s
 
 from anki.lang import _, ngettext
@@ -15,7 +16,7 @@ from aqt.reviewer import Reviewer
 from aqt import mw, browser
 from aqt.utils import showWarning, showInfo, tooltip, isWin, isMac
 from aqt.qt import *
-from PyQt4.QtGui import QIcon
+from PyQt5.QtGui import QIcon
 from distutils.spawn import find_executable
 
 # ------------- ADDITIONAL OPTIONS -------------
@@ -390,22 +391,22 @@ def joinCard(isPrev=False, isNext=False):
 
 def addReplayVideoShortcut():
     mw.replayVideoShortcut = QShortcut(QKeySequence("Ctrl+R"), mw)
-    mw.connect(mw.replayVideoShortcut, SIGNAL("activated()"), replayVideo)
+    mw.replayVideoShortcut.activated.connect(replayVideo)
     
     mw.replayVideoWithoutEndShortcut = QShortcut(QKeySequence("Shift+R"), mw)
-    mw.connect(mw.replayVideoWithoutEndShortcut, SIGNAL("activated()"), lambda: replayVideo(isEnd=False))
+    mw.replayVideoWithoutEndShortcut.activated.connect(lambda: replayVideo(isEnd=False))
 
     mw.replayPrevVideoShortcut = QShortcut(QKeySequence("["), mw)
-    mw.connect(mw.replayPrevVideoShortcut, SIGNAL("activated()"), lambda: replayVideo(isPrev=True))
+    mw.replayPrevVideoShortcut.activated.connect(lambda: replayVideo(isPrev=True))
 
     mw.replayNextVideoShortcut = QShortcut(QKeySequence("]"), mw)
-    mw.connect(mw.replayNextVideoShortcut, SIGNAL("activated()"), lambda: replayVideo(isNext=True))
+    mw.replayNextVideoShortcut.activated.connect(lambda: replayVideo(isNext=True))
 
     mw.joinPrevCardShortcut = QShortcut(QKeySequence("Shift+["), mw)
-    mw.connect(mw.joinPrevCardShortcut, SIGNAL("activated()"), lambda: joinCard(isPrev=True))
+    mw.joinPrevCardShortcut.activated.connect(lambda: joinCard(isPrev=True))
 
     mw.joinNextCardShortcut = QShortcut(QKeySequence("Shift+]"), mw)
-    mw.connect(mw.joinNextCardShortcut, SIGNAL("activated()"), lambda: joinCard(isNext=True))
+    mw.joinNextCardShortcut.activated.connect(lambda: joinCard(isNext=True))
 
 addHook("profileLoaded", addReplayVideoShortcut)
 

@@ -2,6 +2,7 @@
 
 # import the main window object (mw) from aqt
 from aqt import mw
+from PyQt5.QtWidgets import *
 # import the "get file" tool from utils.py
 from aqt.qt import *
 
@@ -1138,21 +1139,21 @@ class MainWindow(QDialog):
         QDialog.closeEvent(self, event)
 
     def showVideoFileDialog(self):
-        fname = str(QFileDialog.getOpenFileName(directory = self.directory, filter = "Video Files (*.avi *.mkv *.mp4 *.ts);;All files (*.*)"))
+        fname = str(QFileDialog.getOpenFileName(directory = self.directory, filter = "Video Files (*.avi *.mkv *.mp4 *.ts);;All files (*.*)"))[0]
         self.videoEdit.setText(fname)
 
         if os.path.exists(fname):
             self.directory = os.path.dirname(fname)
 
     def showSubsEngFileDialog(self):
-        fname = str(QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)"))
+        fname = str(QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)"))[0]
         self.subsEngEdit.setText(fname)
 
         if os.path.exists(fname):
             self.directory = os.path.dirname(fname)
 
     def showSubsRusFileDialog(self):
-        fname = str(QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)"))
+        fname = str(QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)"))[0]
         self.subsRusEdit.setText(fname)
 
         if os.path.exists(fname):
