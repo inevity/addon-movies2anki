@@ -18,7 +18,7 @@ import time
 
 from collections import deque
 #from .ConfigParser import SafeConfigParser
-from .'configparser-3.5.0'.src.configparser import ConfigParser
+from .configparser.src.configparser import ConfigParser
 from subprocess import call
 from subprocess import check_output
 from subprocess import Popen
