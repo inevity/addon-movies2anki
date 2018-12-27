@@ -410,7 +410,8 @@ def addReplayVideoShortcut():
 
 addHook("profileLoaded", addReplayVideoShortcut)
 
-Reviewer._keyHandler = wrap(Reviewer._keyHandler, _newKeyHandler, "around")
+#Reviewer._keyHandler = wrap(Reviewer._keyHandler, _newKeyHandler, "around")
+Reviewer._shortcutKeys = wrap(Reviewer._shortcutKeys, _newKeyHandler, "around")
 
 class MediaWorker(QThread):
     updateProgress = pyqtSignal(int)
