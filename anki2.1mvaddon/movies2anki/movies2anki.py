@@ -16,7 +16,8 @@ import sys
 import time
 
 from collections import deque
-from .ConfigParser import SafeConfigParser
+#from .ConfigParser import SafeConfigParser
+from .'configparser-3.5.0'.src.configparser import ConfigParser
 from subprocess import call
 from subprocess import check_output
 from subprocess import Popen
@@ -524,7 +525,7 @@ class Model(object):
         if not os.path.isfile(self.config_file_name):
             return
 
-        config = SafeConfigParser()
+        config = ConfigParser()
         config.read(self.config_file_name)
 
         self.input_directory = config.get('main', 'input_directory').decode('utf-8')
@@ -555,7 +556,7 @@ class Model(object):
             self.recent_deck_names.extendleft(value)
 
     def save_settings(self):
-        config = SafeConfigParser()
+        config = ConfigParser()
         config.add_section('main')
         config.set('main', 'input_directory', self.input_directory.encode('utf-8'))
         # config.set('main', 'output_directory', self.output_directory.encode('utf-8'))
