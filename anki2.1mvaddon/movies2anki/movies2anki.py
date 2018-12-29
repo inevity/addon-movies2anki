@@ -1441,6 +1441,7 @@ The longest phrase: %s min. %s sec.""" % (self.model.num_en_subs, self.model.num
         self.changeRusSubs()
 
     def start(self):
+        # Go button
         self.model.jobs = []
         self.model.ffmpeg_split_timestamps = []
         if "*" not in self.model.video_file and "?" not in self.model.video_file:
@@ -1655,6 +1656,7 @@ The longest phrase: %s min. %s sec.""" % (self.model.num_en_subs, self.model.num
         self.progressDialog.setWindowTitle("Generating Cards...")
         self.progressDialog.setCancelButtonText("Cancel")
         self.progressDialog.setMinimumDuration(0)
+        # no show,why?
 
         progress_bar = QProgressBar(self.progressDialog)
         progress_bar.setAlignment(Qt.AlignCenter)
