@@ -22,6 +22,7 @@ from .configparser.src.configparser import ConfigParser
 from subprocess import call
 from subprocess import check_output
 from subprocess import Popen
+from .asstosrt import asstosrt
 
 import subprocess
 import os.path
@@ -655,6 +656,16 @@ class Model(object):
     def load_subtitle(self, filename, is_ignore_SDH, join_lines_separator, join_sentences_separator):
         if len(filename) == 0:
             return []
+        #if end with ass, first convert to srt,then process as below
+        
+        suffix = ".ass"
+        if filename.endswith(suffix):
+            ass_file = open(filename, encoding="utf-8")
+            srt_str = asstosrt.convert(ass_file)
+            #need change filename
+            filename += ".srt"
+            with open(filename, "w", encoding="utf-8") as fp:
+                fp.write(srt_str)
 
         file_content = open(filename, 'r', encoding="utf-8").read()
         if file_content[:3]=='\xef\xbb\xbf': # with bom
@@ -1296,7 +1307,7 @@ class MainWindow(QDialog):
         self.tryToSetEngAudio()
 
     def changeSubtitles(self):
-        self.model.en_srt = guess_srt_file(self.model.video_file, [".srt", "*eng*.srt", "*en*.srt"], "")
+        self.model.en_srt = guess_srt_file(self.model.video_file, [".srt", "*eng*.srt", "*en*.srt", ".ass", "*eng*.ass", "*en*.ass"], "")
         self.subsEngEdit.setText(self.model.en_srt)
 
         self.model.ru_srt = guess_srt_file(self.model.video_file, ["*rus*.srt", "*ru*.srt"], "")
