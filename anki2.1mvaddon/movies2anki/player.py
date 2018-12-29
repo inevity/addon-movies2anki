@@ -24,6 +24,7 @@ ADJUST_AUDIO_STEP = 0.25
 ADJUST_AUDIO_REPLAY_TIME = 2.5
 VLC_DIR = ""
 IINA_DIR = "/Applications/IINA.app/Contents/MacOS/IINA"
+#IINA_DIR = "/Applications/IINA.app/Contents/MacOS/iina-cli --keep-running --stdin"
 # ----------------------------------------------
 
 info = None
@@ -182,12 +183,17 @@ def playVideoClip(path=None, state=None, shift=None, isEnd=True, isPrev=False, i
     fullpath = fields["Path"].encode(sys.getfilesystemencoding())
 
     if VLC_DIR:
+        args += ["--window-scale=1.0", "--autofit=50%"]
         cmd = [VLC_DIR] + args + [os.path.normpath(fullpath)]
     else:
         if isMac and os.path.exists(IINA_DIR):
+            #override by gui para,maybe need use iina-cli 
+            args += ["--window-scale=1.0", "--autofit=50%"]
             args = [o.replace("--", "--mpv-") for o in args]
+            
             cmd = [IINA_DIR] + args + [fullpath]
         else:
+            args += ["--window-scale=1.0", "--autofit=50%"]
             cmd = [mpv_executable] + args + [fullpath]
 
     if p != None and p.poll() is None:
