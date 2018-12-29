@@ -1191,22 +1191,22 @@ class MainWindow(QDialog):
         QDialog.closeEvent(self, event)
 
     def showVideoFileDialog(self):
-        fname = QFileDialog.getOpenFileName(directory = "QFileDialog.getOpenFileName()", filter = "Video Files (*.avi *.mkv *.mp4 *.ts);;All files (*.*)")
-        #fname = str(QFileDialog.getOpenFileName(directory = self.directory, filter = "Video Files (*.avi *.mkv *.mp4 *.ts);;All files (*.*)"))[0]
+       # fname = QFileDialog.getOpenFileName(directory = "QFileDialog.getOpenFileName()", filter = "Video Files (*.avi *.mkv *.mp4 *.ts);;All files (*.*)")
+        fname = QFileDialog.getOpenFileName(directory = self.directory, filter = "Video Files (*.avi *.mkv *.mp4 *.ts);;All files (*.*)")
         self.videoEdit.setText(fname[0])
 
         if os.path.exists(fname[0]):
             self.directory = os.path.dirname(fname[0])
 
     def showSubsEngFileDialog(self):
-        fname = QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)")[0]
+        fname = QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt *.ass)")[0]
         self.subsEngEdit.setText(fname)
 
         if os.path.exists(fname):
             self.directory = os.path.dirname(fname)
 
     def showSubsRusFileDialog(self):
-        fname = str(QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)"))[0]
+        fname = QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt *.ass)")[0]
         self.subsRusEdit.setText(fname)
 
         if os.path.exists(fname):
@@ -1317,7 +1317,7 @@ class MainWindow(QDialog):
         if len(self.model.video_file) > 4:
             self.model.out_en_srt = self.model.video_file[:-3] + self.model.out_en_srt
             self.model.out_ru_srt = self.model.video_file[:-3] + self.model.out_ru_srt
-
+        # guest sub file
         self.changeSubtitles()
 
         self.setDeckName()
