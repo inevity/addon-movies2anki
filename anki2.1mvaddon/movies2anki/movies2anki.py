@@ -528,7 +528,8 @@ class Model(object):
             return
 
         config = ConfigParser()
-        config.read(self.config_file_name)
+        config.read(self.config_file_name, encoding='utf-8')
+
 
        # self.input_directory = config.get('main', 'input_directory').decode('utf-8')
        # # self.output_directory = config.get('main', 'output_directory').decode('utf-8')
@@ -572,7 +573,14 @@ class Model(object):
         self.is_ignore_sdh_subtitle = mcfg.getboolean('is_ignore_sdh_subtitle')
 #        self.is_add_dir_to_media_path = mcfg.getboolean('is_add_dir_to_media_path')
  #       self.is_separate_fragments_without_subtitles = mcfg.getboolean('is_separate_fragments_without_subtitles')
-        self.join_lines_that_end_with = str(mcfg['join_lines_that_end_with'].encode('unicode-escape').strip())
+        
+        
+        #print("end with load", mcfg['join_lines_that_end_with'].strip())
+        #print("end with load", config.get('main', 'join_lines_that_end_with', raw = True))
+        #self.join_lines_that_end_with = str(mcfg['join_lines_that_end_with'].encode('unicode-escape').strip())
+        self.join_lines_that_end_with = config.get('main', 'join_lines_that_end_with', raw = True).strip() 
+
+
         #self.join_lines_that_end_with = mcfg['join_lines_that_end_with'].strip()
         self.join_lines_separator = mcfg['join_lines_separator'].replace("_", " ")
         self.join_sentences_separator = mcfg['join_sentences_separator'].replace("_", " ")
@@ -626,7 +634,10 @@ class Model(object):
                           # 'hardsub_style': self.hardsub_style,
                            'is_ignore_sdh_subtitle': str(self.is_ignore_sdh_subtitle),
                            #'is_add_dir_to_media_path': str(self.is_add_dir_to_media_path),
-                           'join_lines_that_end_with': str(self.join_lines_that_end_with.encode('unicode-escape')),
+                           #'join_lines_that_end_with': str(self.join_lines_that_end_with.encode('unicode-escape')),
+
+                           'join_lines_that_end_with':  self.join_lines_that_end_with,
+
                            #'join_lines_that_end_with': str(self.join_lines_that_end_with.encode('unicode-escape')),
                            #'join_lines_that_end_with': self.join_lines_that_end_with.encode('utf-8'),
                            # 'join_lines_that_end_with': self.join_lines_that_end_with,
