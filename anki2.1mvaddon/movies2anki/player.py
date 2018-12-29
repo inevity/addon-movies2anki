@@ -287,6 +287,19 @@ def _newKeyHandler(self, evt, _old):
 
     return _old(self, evt)
 
+def _addShortcuts(shortcuts):
+    additions = (
+            (",",  lambda: adjustAudio("start", ADJUST_AUDIO_STEP)),
+            (".",  lambda: adjustAudio("start", -1.0 * ADJUST_AUDIO_STEP)),
+            ("<",  lambda: adjustAudio("end", -1.0 * ADJUST_AUDIO_STEP)),
+            (">",  lambda: adjustAudio("end", ADJUST_AUDIO_STEP)),
+            (",+Ctrl", lambda: adjustAudio("start reset")),
+            (",+Shift", lambda: adjustAudio("start reset")),
+            (".+Ctrl", lambda: adjustAudio("end reset")),
+            (".+Shift", lambda: adjustAudio("end reset"))
+            )
+    shortcuts += additions
+
 def replayVideo(isEnd=True, isPrev=False, isNext=False):
     if mw.state == "review" and mw.reviewer.card != None and (mw.reviewer.card.model()["name"] == "movies2anki (add-on)" or mw.reviewer.card.model()["name"].startswith("movies2anki - subs2srs")):
         clearExternalQueue()
@@ -410,8 +423,9 @@ def addReplayVideoShortcut():
 
 addHook("profileLoaded", addReplayVideoShortcut)
 
+addHook("reviewStateShortcuts", _addShortcuts)
 #Reviewer._keyHandler = wrap(Reviewer._keyHandler, _newKeyHandler, "around")
-Reviewer._shortcutKeys = wrap(Reviewer._shortcutKeys, _newKeyHandler, "around")
+#Reviewer._shortcutKeys = wrap(Reviewer._shortcutKeys, _newKeyHandler, "around")
 
 class MediaWorker(QThread):
     updateProgress = pyqtSignal(int)

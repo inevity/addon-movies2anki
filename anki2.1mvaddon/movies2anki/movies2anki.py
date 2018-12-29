@@ -529,62 +529,109 @@ class Model(object):
         config = ConfigParser()
         config.read(self.config_file_name)
 
-        self.input_directory = config.get('main', 'input_directory').decode('utf-8')
-        # self.output_directory = config.get('main', 'output_directory').decode('utf-8')
-        # self.video_width = config.getint('main', 'video_width')
-        # self.video_height = config.getint('main', 'video_height')
-        self.shift_start = config.getfloat('main', 'pad_start')
-        self.shift_end = config.getfloat('main', 'pad_end')
-        self.time_delta = config.getfloat('main', 'gap_between_phrases')
-        self.is_split_long_phrases = config.getboolean('main', 'is_split_long_phrases')
-        self.phrases_duration_limit = config.getint('main', 'phrases_duration_limit')
-        self.mode = config.get('main', 'mode')
-        self.is_write_output_subtitles = config.getboolean('main', 'is_write_output_subtitles')
-        # self.is_write_output_subtitles_for_clips = config.getboolean('main', 'is_write_output_subtitles_for_clips')
-        # self.is_create_clips_with_softsub = config.getboolean('main', 'is_create_clips_with_softsub')
-        # self.is_create_clips_with_hardsub = config.getboolean('main', 'is_create_clips_with_hardsub')
-        # self.hardsub_style = config.get('main', 'hardsub_style')
-        self.is_ignore_sdh_subtitle = config.getboolean('main', 'is_ignore_sdh_subtitle')
-        # self.is_add_dir_to_media_path = config.getboolean('main', 'is_add_dir_to_media_path')
+       # self.input_directory = config.get('main', 'input_directory').decode('utf-8')
+       # # self.output_directory = config.get('main', 'output_directory').decode('utf-8')
+       # # self.video_width = config.getint('main', 'video_width')
+       # # self.video_height = config.getint('main', 'video_height')
+       # self.shift_start = config.getfloat('main', 'pad_start')
+       # self.shift_end = config.getfloat('main', 'pad_end')
+       # self.time_delta = config.getfloat('main', 'gap_between_phrases')
+       # self.is_split_long_phrases = config.getboolean('main', 'is_split_long_phrases')
+       # self.phrases_duration_limit = config.getint('main', 'phrases_duration_limit')
+       # self.mode = config.get('main', 'mode')
+       # self.is_write_output_subtitles = config.getboolean('main', 'is_write_output_subtitles')
+       # # self.is_write_output_subtitles_for_clips = config.getboolean('main', 'is_write_output_subtitles_for_clips')
+       # # self.is_create_clips_with_softsub = config.getboolean('main', 'is_create_clips_with_softsub')
+       # # self.is_create_clips_with_hardsub = config.getboolean('main', 'is_create_clips_with_hardsub')
+       # # self.hardsub_style = config.get('main', 'hardsub_style')
+       # self.is_ignore_sdh_subtitle = config.getboolean('main', 'is_ignore_sdh_subtitle')
+       # # self.is_add_dir_to_media_path = config.getboolean('main', 'is_add_dir_to_media_path')
 
-        self.join_lines_that_end_with = config.get('main', 'join_lines_that_end_with').decode('unicode-escape').strip()
-        self.join_lines_separator = config.get('main', 'join_lines_separator').decode('utf-8').replace("_", " ")
-        self.join_sentences_separator = config.get('main', 'join_sentences_separator').decode('utf-8').replace("_", " ")
-        self.join_questions_with_answers = config.getboolean('main', 'join_questions_with_answers')
-        
-        value = [e.strip() for e in config.get('main', 'recent_deck_names').decode('utf-8').split(',')]
+       # self.join_lines_that_end_with = config.get('main', 'join_lines_that_end_with').decode('unicode-escape').strip()
+       # self.join_lines_separator = config.get('main', 'join_lines_separator').decode('utf-8').replace("_", " ")
+       # self.join_sentences_separator = config.get('main', 'join_sentences_separator').decode('utf-8').replace("_", " ")
+       # self.join_questions_with_answers = config.getboolean('main', 'join_questions_with_answers')
+       # 
+       # value = [e.strip() for e in config.get('main', 'recent_deck_names').decode('utf-8').split(',')]
+        mcfg = config['main']
+        #utf-8 python3
+        self.input_directory = mcfg['input_directory']
+        self.shift_start = float(mcfg['pad_start'])
+        self.shift_end =  float(mcfg['pad_end'])
+        self.time_delta = float(mcfg['gap_between_phrases'])
+        self.is_split_long_phrases = mcfg.getboolean('is_split_long_phrases')
+        self.phrases_duration_limit = int(mcfg['phrases_duration_limit'])
+        self.mode =  mcfg['mode']
+        self.is_write_output_subtitles = mcfg.getboolean('is_write_output_subtitles')
+        self.is_ignore_sdh_subtitle = mcfg.getboolean('is_ignore_sdh_subtitle')
+#        self.is_add_dir_to_media_path = mcfg.getboolean('is_add_dir_to_media_path')
+ #       self.is_separate_fragments_without_subtitles = mcfg.getboolean('is_separate_fragments_without_subtitles')
+        self.join_lines_that_end_with = str(mcfg['join_lines_that_end_with'].encode('unicode-escape').strip())
+        #self.join_lines_that_end_with = mcfg['join_lines_that_end_with'].strip()
+        self.join_lines_separator = mcfg['join_lines_separator'].replace("_", " ")
+        self.join_sentences_separator = mcfg['join_sentences_separator'].replace("_", " ")
+        self.join_questions_with_answers = mcfg.getboolean('join_questions_with_answers')
+
+        value = [e.strip() for e in mcfg['recent_deck_names'].split(',')]
         if len(value) != 0:
             self.recent_deck_names.extendleft(value)
 
     def save_settings(self):
         config = ConfigParser()
-        config.add_section('main')
-        config.set('main', 'input_directory', self.input_directory.encode('utf-8'))
-        # config.set('main', 'output_directory', self.output_directory.encode('utf-8'))
-        # config.set('main', 'video_width', str(self.video_width))
-        # config.set('main', 'video_height', str(self.video_height))
-        config.set('main', 'pad_start', str(self.shift_start))
-        config.set('main', 'pad_end', str(self.shift_end))
-        config.set('main', 'gap_between_phrases', str(self.time_delta))
-        config.set('main', 'is_split_long_phrases', str(self.is_split_long_phrases))
-        config.set('main', 'phrases_duration_limit', str(self.phrases_duration_limit))
-        config.set('main', 'mode', self.mode)
-        config.set('main', 'is_write_output_subtitles', str(self.is_write_output_subtitles))
-        # config.set('main', 'is_write_output_subtitles_for_clips', str(self.is_write_output_subtitles_for_clips))
-        # config.set('main', 'is_create_clips_with_softsub', str(self.is_create_clips_with_softsub))
-        # config.set('main', 'is_create_clips_with_hardsub', str(self.is_create_clips_with_hardsub))
-        # config.set('main', 'hardsub_style', self.hardsub_style.encode('utf-8'))
-        config.set('main', 'is_ignore_sdh_subtitle', str(self.is_ignore_sdh_subtitle))
-        # config.set('main', 'is_add_dir_to_media_path', str(self.is_add_dir_to_media_path))
+      #  config.add_section('main')
+      #  config.set('main', 'input_directory', self.input_directory.encode('utf-8'))
+      #  # config.set('main', 'output_directory', self.output_directory.encode('utf-8'))
+      #  # config.set('main', 'video_width', str(self.video_width))
+      #  # config.set('main', 'video_height', str(self.video_height))
+      #  config.set('main', 'pad_start', str(self.shift_start))
+      #  config.set('main', 'pad_end', str(self.shift_end))
+      #  config.set('main', 'gap_between_phrases', str(self.time_delta))
+      #  config.set('main', 'is_split_long_phrases', str(self.is_split_long_phrases))
+      #  config.set('main', 'phrases_duration_limit', str(self.phrases_duration_limit))
+      #  config.set('main', 'mode', self.mode)
+      #  config.set('main', 'is_write_output_subtitles', str(self.is_write_output_subtitles))
+      #  # config.set('main', 'is_write_output_subtitles_for_clips', str(self.is_write_output_subtitles_for_clips))
+      #  # config.set('main', 'is_create_clips_with_softsub', str(self.is_create_clips_with_softsub))
+      #  # config.set('main', 'is_create_clips_with_hardsub', str(self.is_create_clips_with_hardsub))
+      #  # config.set('main', 'hardsub_style', self.hardsub_style.encode('utf-8'))
+      #  config.set('main', 'is_ignore_sdh_subtitle', str(self.is_ignore_sdh_subtitle))
+      #  # config.set('main', 'is_add_dir_to_media_path', str(self.is_add_dir_to_media_path))
 
-        config.set('main', 'join_lines_that_end_with', self.join_lines_that_end_with.encode('unicode-escape'))
-        config.set('main', 'join_lines_separator', self.join_lines_separator.encode('utf-8').replace(" ", "_"))
-        config.set('main', 'join_sentences_separator', self.join_sentences_separator.encode('utf-8').replace(" ", "_"))
-        config.set('main', 'join_questions_with_answers', str(self.join_questions_with_answers))
-        
-        config.set('main', 'recent_deck_names', ",".join(reversed(self.recent_deck_names)).encode('utf-8'))
+      #  config.set('main', 'join_lines_that_end_with', self.join_lines_that_end_with.encode('unicode-escape'))
+      #  config.set('main', 'join_lines_separator', self.join_lines_separator.encode('utf-8').replace(" ", "_"))
+      #  config.set('main', 'join_sentences_separator', self.join_sentences_separator.encode('utf-8').replace(" ", "_"))
+      #  config.set('main', 'join_questions_with_answers', str(self.join_questions_with_answers))
+      #  
+      #  config.set('main', 'recent_deck_names', ",".join(reversed(self.recent_deck_names)).encode('utf-8'))
+        config['main'] = { 'input_directory': self.input_directory,
+                         #  'output_directory': self.output_directory,
+                         #  'video_width': str(self.video_width),
+                         #  'video_height': str(self.video_height),
+                           'pad_start': str(self.shift_start),
+                           'pad_end': str(self.shift_end),
+                           'gap_between_phrases': str(self.time_delta),
+                           'is_split_long_phrases': str(self.is_split_long_phrases),
+                           'phrases_duration_limit': str(self.phrases_duration_limit),
+                           'mode': self.mode,
+                           'is_write_output_subtitles': str(self.is_write_output_subtitles),
+                        #   'is_write_output_subtitles_for_clips': str(self.is_write_output_subtitles_for_clips),
+                         #  'is_create_clips_with_softsub': str(self.is_create_clips_with_softsub),
+                          # 'is_create_clips_with_hardsub': str(self.is_create_clips_with_hardsub),
+                          # 'hardsub_style': self.hardsub_style,
+                           'is_ignore_sdh_subtitle': str(self.is_ignore_sdh_subtitle),
+                           #'is_add_dir_to_media_path': str(self.is_add_dir_to_media_path),
+                           'join_lines_that_end_with': str(self.join_lines_that_end_with.encode('unicode-escape')),
+                           #'join_lines_that_end_with': str(self.join_lines_that_end_with.encode('unicode-escape')),
+                           #'join_lines_that_end_with': self.join_lines_that_end_with.encode('utf-8'),
+                           # 'join_lines_that_end_with': self.join_lines_that_end_with,
+                            'join_lines_separator': self.join_lines_separator.replace(" ", "_"),
+                            'join_sentences_separator': self.join_sentences_separator.replace(" ", "_"),
+                            'join_questions_with_answers': str(self.join_questions_with_answers),
+                          # 'is_separate_fragments_without_subtitles': str(self.is_separate_fragments_without_subtitles),
+                           'recent_deck_names': ",".join(reversed(self.recent_deck_names)) }
   
-        with open(self.config_file_name, 'w') as f:
+        #with open(self.config_file_name, 'w', encoding='unicode-escape') as f:
+        with open(self.config_file_name, 'w', encoding='utf-8') as f:
             config.write(f)
 
     def convert_to_unicode(self, file_content):
@@ -612,7 +659,7 @@ class Model(object):
         file_content = fix_empty_lines(file_content)
 
         ## Конвертируем субтитры в Unicode
-        file_content = self.convert_to_unicode(file_content)
+        #file_content = self.convert_to_unicode(file_content)
 
         ## Читаем субтитры
         return read_subtitles(file_content, is_ignore_SDH, join_lines_separator, join_sentences_separator)
@@ -1139,14 +1186,15 @@ class MainWindow(QDialog):
         QDialog.closeEvent(self, event)
 
     def showVideoFileDialog(self):
-        fname = str(QFileDialog.getOpenFileName(directory = self.directory, filter = "Video Files (*.avi *.mkv *.mp4 *.ts);;All files (*.*)"))[0]
-        self.videoEdit.setText(fname)
+        fname = QFileDialog.getOpenFileName(directory = "QFileDialog.getOpenFileName()", filter = "Video Files (*.avi *.mkv *.mp4 *.ts);;All files (*.*)")
+        #fname = str(QFileDialog.getOpenFileName(directory = self.directory, filter = "Video Files (*.avi *.mkv *.mp4 *.ts);;All files (*.*)"))[0]
+        self.videoEdit.setText(fname[0])
 
-        if os.path.exists(fname):
-            self.directory = os.path.dirname(fname)
+        if os.path.exists(fname[0]):
+            self.directory = os.path.dirname(fname[0])
 
     def showSubsEngFileDialog(self):
-        fname = str(QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)"))[0]
+        fname = QFileDialog.getOpenFileName(directory = self.directory, filter = "Subtitle Files (*.srt)")[0]
         self.subsEngEdit.setText(fname)
 
         if os.path.exists(fname):
