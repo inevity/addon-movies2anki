@@ -553,7 +553,12 @@ class Model(object):
        # self.join_questions_with_answers = config.getboolean('main', 'join_questions_with_answers')
        # 
        # value = [e.strip() for e in config.get('main', 'recent_deck_names').decode('utf-8').split(',')]
+        if (config.sections() == []):
+            return
+
         mcfg = config['main']
+        
+
         #utf-8 python3
         self.input_directory = mcfg['input_directory']
         self.shift_start = float(mcfg['pad_start'])
