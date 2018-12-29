@@ -1,0 +1,3 @@
+[submodule "anki2.1mvaddon/movies2anki/asstosrt"]
+	path = anki2.1mvaddon/movies2anki/asstosrt
+	url = https://github.com/sorz/asstosrt.git
