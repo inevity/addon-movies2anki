@@ -18,7 +18,7 @@
    You can use the [Anki Personal Server](https://github.com/tsudoko/anki-sync-server) which support Python 3 and Anki 2.1 to sync against instead of AnkiWeb.
    
    New features:  
-      * support external ass subtitles which auto convert to srt file
+   *  support external ass subtitles which auto convert to srt file
       
 
 
