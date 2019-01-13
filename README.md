@@ -1,7 +1,7 @@
 #  movies2anki addon for Anki 2.1
 
 ## file summary:
-  * origin standalone program code which ported to Anki 2.1 as reference [url](https://github.com/inevity/movies2anki)
+  * origin standalone program code which ported to Anki 2.1 as reference, [website](https://github.com/inevity/movies2anki)
       - ./movies2anki-sample.apkg
       - ./movies2anki.py
   * Anki 2.0 addon from [shared addon](https://ankiweb.net/shared/info/939347702) 
@@ -17,7 +17,7 @@
   
    You can use the [Anki Personal Server](https://github.com/tsudoko/anki-sync-server) which support Python 3 and Anki 2.1 to sync against instead of AnkiWeb.
    
-   New features:
+   New features:  
       * support external ass subtitles which auto convert to srt file
       
 
